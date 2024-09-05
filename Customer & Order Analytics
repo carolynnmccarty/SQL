@@ -1,0 +1,76 @@
+--    HOW MANY ORDERS WERE PLACED IN JANUARY?
+SELECT COUNT(orderID)
+FROM JanSales
+WHERE orderid IS NOT NULL
+AND orderid <> ''
+AND length(orderid) = 6
+AND orderid <> 'Order ID'
+;
+
+--HOW MANY THESE ORDERS WERE FOR AN IPHONE?
+SELECT COUNT(orderID)
+FROM JanSales
+WHERE orderid IS NOT NULL
+AND orderid <> ''
+AND length(orderid) = 6
+AND orderid <> 'Order ID'
+AND product="iPhone"
+;
+
+-- SELECT THE CUSTOMER ACCOUNT NUMBERS FOR ALL THE ORDERS THAT WERE PLACED IN FEBRUARY
+SELECT DISTINCT
+acctnum
+FROM customers
+LEFT JOIN FebSales
+ON customers.order_id=FebSales.orderID
+WHERE orderid IS NOT NULL
+AND orderid <> ''
+AND length(orderid) = 6
+AND orderid <> 'Order ID'
+;
+
+--WHICH PRODUCT WAS THE CHEAPEST SOLD IN JANUARY AND WHAT WAS THE PRICE?
+SELECT
+MIN(price)
+, product
+FROM JanSales
+GROUP BY product
+ORDER BY MIN(price)
+LIMIT 1
+;
+
+-- WHAT IS THE TOTAL REVENUE FOR EACH PRODUCT SOLD IN JANUARY?
+SELECT
+SUM(quantity)*price as revenue
+,product
+FROM JanSales
+WHERE orderid IS NOT NULL
+AND orderid <> ''
+AND length(orderid) = 6
+AND orderid <> 'Order ID'
+GROUP BY product
+;
+
+--WHICH PRODUCTS WERE SOLD IN FEBRUARY AT 548 Lincoln St, Seattle, WA 98101?
+--HOW MANY OF EACH WERE SOLD AND WHAT WAS THE TOTAL REVENUE?
+SELECT
+product
+,SUM(quantity) AS amt_sold
+,SUM(quantity)*price AS revenue
+FROM FebSales
+WHERE location="548 Lincoln St, Seattle, WA 98101"
+GROUP BY product
+;
+
+--HOW MANY CUSTOMERS ORDERED MORE THAN 2 PRODUCTS AT A TIME IN FEBRUARY
+--AND WHAT WAS THE AVERAGE AMOUNT SPENT FOR THOSE CUSTOMERS?
+SELECT
+COUNT(distinct customers.acctnum)
+,AVG(price*quantity)
+FROM customers
+LEFT JOIN FebSales
+ON customers.order_id=FebSales.orderID
+WHERE FebSales.quantity>2
+AND length(orderid) = 6
+AND orderid <> 'Order ID'
+;
