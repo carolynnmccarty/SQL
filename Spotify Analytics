@@ -62,3 +62,21 @@ AVG(energy)
 FROM Spotifydata
 WHERE id<=10
 ;
+
+--Calculate the average popularity for the artists in the Spotify data table.
+--Then, for every artist with an average popularity of 90 or above, show their name, their average popularity, and label them as a “Top Star”.
+WITH avgpopCTE AS(
+SELECT
+artist_name
+,AVG(popularity) as avg_pop
+FROM SpotifyData
+GROUP BY SpotifyData.artist_name
+)
+SELECT
+artist_name
+,avg_pop
+,'Top Star' AS tag
+FROM avgpopCTE
+WHERE avg_pop>=90
+ORDER BY avg_pop desc
+;
