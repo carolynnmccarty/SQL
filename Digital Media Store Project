@@ -1,0 +1,158 @@
+--1. Show Customers (their full names, customer ID, and country) who are not in the US.
+SELECT FirstName
+,LastName
+,customerID
+,Country
+FROM customers
+WHERE Country <> "USA"
+ORDER BY LastName
+;
+--2. Show only the Customers from Brazil.
+SELECT FirstName
+,LastName
+FROM customers
+Where Country="Brazil"
+;
+--3. Find the Invoices of customers who are from Brazil. The resulting table should show the customer's full name, Invoice ID, Date of the invoice, and billing country.
+SELECT
+FirstName
+,LastName
+,InvoiceId
+,InvoiceDate
+,BillingCountry
+FROM customers
+JOIN invoices
+ON customers.CustomerId = invoices.CustomerId
+WHERE Country="Brazil"
+;
+--4. Show the Employees who are Sales Agents.
+SELECT
+LastName
+,FirstName
+FROM employees
+WHERE Title = "Sales Support Agent"
+;
+--5. Find a unique/distinct list of billing countries from the Invoice table.
+SELECT DISTINCT BillingCountry
+FROM invoices
+ORDER BY BillingCountry asc
+;
+--6. Provide a query that shows the invoices associated with each sales agent. The resulting table should include the Sales Agent's full name.
+SELECT
+invoices.InvoiceId
+,employees.FirstName
+,employees.LastName
+FROM employees
+JOIN customers
+ON customers.SupportRepId = employees.EmployeeId
+JOIN invoices
+ON invoices.CustomerId=customers.CustomerId
+;
+--7. Show the Invoice Total, Customer name, Country, and Sales Agent name for all invoices and customers.
+SELECT
+total as InvoiceTotal
+,customers.FirstName
+,customers.LastName
+,customers.Country
+,employees.FirstName as agentfirstname
+,employees.LastName as agentlastname
+FROM employees
+JOIN customers
+ON customers.SupportRepId = employees.EmployeeId
+JOIN invoices
+ON invoices.CustomerId=customers.CustomerId
+;
+--8. How many Invoices were there in 2009?
+SELECT COUNT(*)
+FROM invoices
+WHERE InvoiceDate LIKE "%2009%"
+;
+--9. What are the total sales for 2009?
+SELECT SUM(TOTAL)
+FROM invoices
+WHERE InvoiceDate LIKE "%2009%"
+;
+--10. Write a query that includes the purchased track name with each invoice line ID.
+SELECT
+InvoiceLineID
+,tracks.Name
+FROM invoice_items
+JOIN tracks
+ON tracks.TrackId = invoice_items.TrackId
+ORDER BY invoicelineid
+;
+--11. Write a query that includes the purchased track name AND artist name with each invoice line ID.
+SELECT
+InvoiceLineID
+,tracks.Name as TrackName
+,artists.Name as ArtistName
+FROM invoice_items
+JOIN tracks
+ON tracks.TrackId = invoice_items.TrackId
+JOIN albums
+ON albums.AlbumId=tracks.albumid
+JOIN artists
+ON albums.ArtistId=artists.ArtistId
+ORDER BY invoicelineid
+;
+--12. Provide a query that shows all the Tracks, and include the Album name, Media type, and Genre.
+SELECT
+Tracks.Name as Track
+,Albums.Title as AlbumName
+,Media_Types.Name as MediaType
+,Genres.Name as Genre
+FROM tracks
+JOIN albums
+ON albums.AlbumId = tracks.AlbumId
+JOIN media_types
+ON media_types.MediaTypeId = tracks.MediaTypeId
+JOIN genres
+ON genres.GenreId = tracks.GenreId
+;
+--13. Show the total sales made by each sales agent.
+SELECT
+SUM(invoices.TOTAL) as TotalSales
+,employees.FirstName
+,employees.LastName
+FROM employees
+JOIN customers
+ON customers.SupportRepId = employees.EmployeeId
+JOIN invoices
+ON invoices.CustomerId=customers.CustomerId
+GROUP BY employees.EmployeeID
+ORDER BY employees.LastName
+;
+--14. Which sales agent made the most dollars in sales in 2009?
+SELECT SUM(invoices.total) as "2009 Sales Total"
+,employees.FirstName
+,employees.LastName
+FROM employees
+JOIN customers
+ON customers.SupportRepId = employees.EmployeeId
+JOIN invoices
+ON invoices.CustomerId=customers.CustomerId
+WHERE invoices.InvoiceDate LIKE "%2009%"
+GROUP BY employees.EmployeeID
+ORDER BY SUM(invoices.total) desc
+LIMIT 1
+;
+--15. List the first and last names and email of any repeat customers there have been.
+SELECT
+customers.FirstName
+,customers.LastName
+,customers.email
+FROM customers
+JOIN invoices
+ON invoices.CustomerId=customers.customerid
+GROUP BY invoices.CustomerID
+HAVING COUNT(*) > 1
+;
+--16. What are the top 3 countries in regards to number of customers?
+SELECT
+COUNT(Country) as "Number of Customers"
+,country
+FROM customers
+GROUP BY country
+ORDER BY "Number of Customers" desc
+LIMIT 3
+;
